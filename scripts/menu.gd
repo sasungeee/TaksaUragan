@@ -42,7 +42,7 @@ func _on_exit_button_pressed() -> void:
 	$CanvasLayer/VBoxContainerBG.visible = true
 
 func _on_enter_id_text_changed(new_text: String) -> void:
-	if $CanvasLayer/Panel/VBoxContainerPAN/EnterID.text != "":
+	if $CanvasLayer/Panel/VBoxContainerPAN/EnterID.text.length() == 5:
 		$CanvasLayer/Panel/VBoxContainerPAN/JoinLobby.disabled = false
 	else:
 		$CanvasLayer/Panel/VBoxContainerPAN/JoinLobby.disabled = true

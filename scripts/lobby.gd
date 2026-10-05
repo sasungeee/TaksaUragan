@@ -9,7 +9,11 @@ var player_names := {}
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-
+	
+	$CanvasLayer/Panel.visible = false
+	$CanvasLayer/VBoxContainer.visible = true
+	$CanvasLayer/ExitButton.visible = true
+	
 	var file = FileAccess.open("user://player_data.txt", FileAccess.READ)
 	player_name = file.get_as_text()
 	
@@ -51,12 +55,15 @@ func _on_peer_connected(peer_id: int) -> void:
 func _on_peer_disconnected(peer_id: int) -> void:
 	print("Отключился peer: ", peer_id)
 	player_names.erase(peer_id)
-	_update_players_list()
 	
-	if TubeClientAutoload.is_server == true:
-		$CanvasLayer/VBoxContainer/StartButton.disabled = false
+	if peer_id == 1 or not multiplayer.is_server():
+		TubeClientAutoload.leave_session()
+		$CanvasLayer/Panel/VBoxContainer/Label.text = "The host has left the server."
+		$CanvasLayer/VBoxContainer.visible = false
+		$CanvasLayer/ExitButton.visible = false
+		$CanvasLayer/Panel.visible = true
 	else:
-		$CanvasLayer/VBoxContainer/StartButton.disabled = true
+		_update_players_list()
 
 func _ensure_my_name() -> void:
 	var my_id = multiplayer.get_unique_id()
@@ -96,9 +103,23 @@ func _update_players_list() -> void:
 	ids.sort()
 	
 	for id in ids:
-		var name_str = player_names[id]
+		var x = 0
+		var original_name = player_names[id]
+		var name_str = original_name
+		
+		for i in ids:
+			if i == id:
+				break
+			elif player_names[i] == original_name:
+				x += 1
+			
+			if x > 0:
+				name_str = original_name + " " + str(x)
+
 		if id == multiplayer.get_unique_id():
 			text += "• " + name_str + " (you)\n"
+		elif id == 1:
+			text += "• " + name_str + " (host)\n"
 		else:
 			text += "• " + name_str + "\n"
 	

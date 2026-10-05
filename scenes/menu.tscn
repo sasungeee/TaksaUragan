@@ -28,6 +28,7 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_font_sizes/font_size = 48
 placeholder_text = "Enter your name:"
+max_length = 20
 
 [node name="Container" type="Container" parent="CanvasLayer/VBoxContainerBG" unique_id=1253003283]
 custom_minimum_size = Vector2(0, 100)
@@ -77,6 +78,7 @@ size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_font_sizes/font_size = 48
 placeholder_text = "Enter lobby ID:"
+max_length = 5
 
 [node name="Container2" type="Container" parent="CanvasLayer/Panel/VBoxContainerPAN" unique_id=77208490]
 custom_minimum_size = Vector2(0, 100)
@@ -90,6 +92,7 @@ layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 theme_override_font_sizes/font_size = 64
+disabled = true
 text = "Join to Lobby"
 
 [node name="ExitButton" type="Button" parent="CanvasLayer/Panel" unique_id=365893267]
