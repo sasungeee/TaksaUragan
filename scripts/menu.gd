@@ -127,7 +127,7 @@ func _on_join_lobby_pressed() -> void:
 	message_box.visible = true
 	
 	#Захожу в созданую сессию
-	TubeClientAutoload.join_session(enter_id.text)
+	TubeClientAutoload.join_session(enter_id.text.to_lower())
 
 func _on_exit_button_pressed() -> void:
 	#Настройка видимости объектов

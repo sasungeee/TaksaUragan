@@ -42,7 +42,7 @@ func _ready() -> void:
 	multiplayer.server_disconnected.connect(_on_host_disconnected)
 	
 	#Вывожу пятизначное ID сервера
-	lobby_id.text = TubeClientAutoload.session_id
+	lobby_id.text = TubeClientAutoload.session_id.to_upper()
 	
 	#Обновляю список игроков
 	_update_players_list()
