@@ -1,0 +1,80 @@
+[gd_scene format=3 uid="uid://c7v0213c2jhd5"]
+
+[ext_resource type="Script" uid="uid://c5n1yfyjbod2q" path="res://scripts/lobby.gd" id="1_o1atq"]
+
+[node name="Lobby" type="Control" unique_id=1849726458]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_o1atq")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1260553738]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer" unique_id=181461901]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+alignment = 1
+
+[node name="LobbyID" type="Label" parent="CanvasLayer/VBoxContainer" unique_id=1297400678]
+custom_minimum_size = Vector2(600, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 64
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="CopyButton" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=469236416]
+custom_minimum_size = Vector2(600, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 48
+text = "Copy"
+
+[node name="PanelContainer" type="PanelContainer" parent="CanvasLayer/VBoxContainer" unique_id=1779989136]
+custom_minimum_size = Vector2(600, 500)
+custom_maximum_size = Vector2(-1, 500)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CanvasLayer/VBoxContainer/PanelContainer" unique_id=1959441562]
+custom_maximum_size = Vector2(-1, 500)
+layout_mode = 2
+
+[node name="Players" type="Label" parent="CanvasLayer/VBoxContainer/PanelContainer/ScrollContainer" unique_id=615547023]
+layout_mode = 2
+size_flags_vertical = 1
+theme_override_font_sizes/font_size = 32
+
+[node name="StartButton" type="Button" parent="CanvasLayer/VBoxContainer" unique_id=1789478012]
+custom_minimum_size = Vector2(600, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 48
+text = "Start Game"
+
+[node name="ExitButton" type="Button" parent="CanvasLayer" unique_id=674949989]
+custom_minimum_size = Vector2(200, 75)
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -210.0
+offset_top = 10.0
+offset_right = -9.999756
+offset_bottom = 85.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 32
+text = "Exit"
+
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/CopyButton" to="." method="_on_copy_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/ExitButton" to="." method="_on_exit_button_pressed"]

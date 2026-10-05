@@ -1,0 +1,115 @@
+[gd_scene format=3 uid="uid://deup0mfubg2ra"]
+
+[ext_resource type="Script" uid="uid://bq3kslamkdsld" path="res://scripts/menu.gd" id="1_yqeox"]
+
+[node name="Menu" type="Control" unique_id=1718362812]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_yqeox")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1752668674]
+
+[node name="VBoxContainerBG" type="VBoxContainer" parent="CanvasLayer" unique_id=1716133175]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="EnterName" type="LineEdit" parent="CanvasLayer/VBoxContainerBG" unique_id=1323532764]
+custom_minimum_size = Vector2(600, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 48
+placeholder_text = "Enter your name:"
+
+[node name="Container" type="Container" parent="CanvasLayer/VBoxContainerBG" unique_id=1253003283]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="JoinGame" type="Button" parent="CanvasLayer/VBoxContainerBG" unique_id=820470521]
+custom_minimum_size = Vector2(600, 200)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 64
+text = "Join Game"
+
+[node name="CreateGame" type="Button" parent="CanvasLayer/VBoxContainerBG" unique_id=774162864]
+custom_minimum_size = Vector2(600, 200)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 64
+text = "Create Game"
+
+[node name="Panel" type="Panel" parent="CanvasLayer" unique_id=674469459]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="VBoxContainerPAN" type="VBoxContainer" parent="CanvasLayer/Panel" unique_id=1776798866]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="EnterID" type="LineEdit" parent="CanvasLayer/Panel/VBoxContainerPAN" unique_id=1704902477]
+custom_minimum_size = Vector2(600, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 48
+placeholder_text = "Enter lobby ID:"
+
+[node name="Container2" type="Container" parent="CanvasLayer/Panel/VBoxContainerPAN" unique_id=77208490]
+custom_minimum_size = Vector2(0, 100)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="JoinLobby" type="Button" parent="CanvasLayer/Panel/VBoxContainerPAN" unique_id=1467756741]
+custom_minimum_size = Vector2(600, 200)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+theme_override_font_sizes/font_size = 64
+text = "Join to Lobby"
+
+[node name="ExitButton" type="Button" parent="CanvasLayer/Panel" unique_id=365893267]
+custom_minimum_size = Vector2(200, 75)
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -210.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = 85.0
+grow_horizontal = 0
+theme_override_font_sizes/font_size = 32
+text = "Exit"
+
+[connection signal="text_changed" from="CanvasLayer/VBoxContainerBG/EnterName" to="." method="_on_enter_name_text_changed"]
+[connection signal="text_submitted" from="CanvasLayer/VBoxContainerBG/EnterName" to="." method="_on_enter_name_text_submitted"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainerBG/JoinGame" to="." method="_on_join_game_pressed"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainerBG/CreateGame" to="." method="_on_create_game_pressed"]
+[connection signal="text_changed" from="CanvasLayer/Panel/VBoxContainerPAN/EnterID" to="." method="_on_enter_id_text_changed"]
+[connection signal="pressed" from="CanvasLayer/Panel/VBoxContainerPAN/JoinLobby" to="." method="_on_join_lobby_pressed"]
+[connection signal="pressed" from="CanvasLayer/Panel/ExitButton" to="." method="_on_exit_button_pressed"]
