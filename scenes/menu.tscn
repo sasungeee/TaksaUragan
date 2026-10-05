@@ -52,7 +52,7 @@ size_flags_vertical = 4
 theme_override_font_sizes/font_size = 64
 text = "Create Game"
 
-[node name="Panel" type="Panel" parent="CanvasLayer" unique_id=674469459]
+[node name="JoinGamePanel" type="Panel" parent="CanvasLayer" unique_id=674469459]
 visible = false
 anchors_preset = 15
 anchor_right = 1.0
@@ -62,7 +62,7 @@ grow_vertical = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="VBoxContainerPAN" type="VBoxContainer" parent="CanvasLayer/Panel" unique_id=1776798866]
+[node name="VBoxContainerPAN" type="VBoxContainer" parent="CanvasLayer/JoinGamePanel" unique_id=1776798866]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -71,7 +71,7 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="EnterID" type="LineEdit" parent="CanvasLayer/Panel/VBoxContainerPAN" unique_id=1704902477]
+[node name="EnterID" type="LineEdit" parent="CanvasLayer/JoinGamePanel/VBoxContainerPAN" unique_id=1704902477]
 custom_minimum_size = Vector2(600, 100)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -80,13 +80,13 @@ theme_override_font_sizes/font_size = 48
 placeholder_text = "Enter lobby ID:"
 max_length = 5
 
-[node name="Container2" type="Container" parent="CanvasLayer/Panel/VBoxContainerPAN" unique_id=77208490]
+[node name="Container2" type="Container" parent="CanvasLayer/JoinGamePanel/VBoxContainerPAN" unique_id=77208490]
 custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 4
 
-[node name="JoinLobby" type="Button" parent="CanvasLayer/Panel/VBoxContainerPAN" unique_id=1467756741]
+[node name="JoinLobby" type="Button" parent="CanvasLayer/JoinGamePanel/VBoxContainerPAN" unique_id=1467756741]
 custom_minimum_size = Vector2(600, 200)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -95,7 +95,7 @@ theme_override_font_sizes/font_size = 64
 disabled = true
 text = "Join to Lobby"
 
-[node name="ExitButton" type="Button" parent="CanvasLayer/Panel" unique_id=365893267]
+[node name="ExitButton" type="Button" parent="CanvasLayer/JoinGamePanel" unique_id=365893267]
 custom_minimum_size = Vector2(200, 75)
 layout_mode = 1
 anchors_preset = 1
@@ -109,10 +109,61 @@ grow_horizontal = 0
 theme_override_font_sizes/font_size = 32
 text = "Exit"
 
+[node name="Message" type="Panel" parent="CanvasLayer" unique_id=1628131104]
+visible = false
+custom_minimum_size = Vector2(750, 350)
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -375.0
+offset_top = -175.0
+offset_right = 375.0
+offset_bottom = 175.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 4
+size_flags_vertical = 4
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Message" unique_id=1420061536]
+custom_minimum_size = Vector2(740, 340)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -100.0
+offset_top = -51.0
+offset_right = 100.0
+offset_bottom = 51.0
+grow_horizontal = 2
+grow_vertical = 2
+accessibility_region = true
+
+[node name="Label" type="Label" parent="CanvasLayer/Message/VBoxContainer" unique_id=1029823845]
+custom_minimum_size = Vector2(0, 250)
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ExitButton2" type="Button" parent="CanvasLayer/Message/VBoxContainer" unique_id=654521665]
+visible = false
+custom_minimum_size = Vector2(200, 75)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 10
+theme_override_font_sizes/font_size = 32
+text = "Exit"
+
 [connection signal="text_changed" from="CanvasLayer/VBoxContainerBG/EnterName" to="." method="_on_enter_name_text_changed"]
 [connection signal="text_submitted" from="CanvasLayer/VBoxContainerBG/EnterName" to="." method="_on_enter_name_text_submitted"]
 [connection signal="pressed" from="CanvasLayer/VBoxContainerBG/JoinGame" to="." method="_on_join_game_pressed"]
 [connection signal="pressed" from="CanvasLayer/VBoxContainerBG/CreateGame" to="." method="_on_create_game_pressed"]
-[connection signal="text_changed" from="CanvasLayer/Panel/VBoxContainerPAN/EnterID" to="." method="_on_enter_id_text_changed"]
-[connection signal="pressed" from="CanvasLayer/Panel/VBoxContainerPAN/JoinLobby" to="." method="_on_join_lobby_pressed"]
-[connection signal="pressed" from="CanvasLayer/Panel/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="text_changed" from="CanvasLayer/JoinGamePanel/VBoxContainerPAN/EnterID" to="." method="_on_enter_id_text_changed"]
+[connection signal="pressed" from="CanvasLayer/JoinGamePanel/VBoxContainerPAN/JoinLobby" to="." method="_on_join_lobby_pressed"]
+[connection signal="pressed" from="CanvasLayer/JoinGamePanel/ExitButton" to="." method="_on_exit_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Message/VBoxContainer/ExitButton2" to="." method="_on_exit_button_pressed"]
