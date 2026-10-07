@@ -77,6 +77,7 @@ theme_override_font_sizes/font_size = 32
 text = "Exit"
 
 [node name="Message" type="Panel" parent="CanvasLayer" unique_id=691420091]
+visible = false
 custom_minimum_size = Vector2(750, 350)
 anchors_preset = 8
 anchor_left = 0.5
@@ -125,5 +126,6 @@ theme_override_font_sizes/font_size = 32
 text = "Exit"
 
 [connection signal="pressed" from="CanvasLayer/VBoxContainer/CopyButton" to="." method="_on_copy_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/ExitButton" to="." method="_on_exit_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/Message/VBoxContainer/ExitButton2" to="." method="_on_exit_button_pressed"]

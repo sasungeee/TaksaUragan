@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://cbh6vp8hb13ek"]
+
+[ext_resource type="Script" uid="uid://dq16se58gmcvk" path="res://scripts/player_preview.gd" id="1_s8wu7"]
+
+[node name="PlayerPreview" type="Control" unique_id=591081041]
+custom_minimum_size = Vector2(200, 200)
+layout_mode = 3
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+grow_horizontal = 0
+size_flags_horizontal = 4
+size_flags_vertical = 6
+script = ExtResource("1_s8wu7")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1171559358]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="NamePreview" type="RichTextLabel" parent="VBoxContainer" unique_id=1636086134]
+custom_minimum_size = Vector2(190, 125)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 6
+theme_override_font_sizes/normal_font_size = 24
+horizontal_alignment = 1
+vertical_alignment = 2
+
+[node name="CardNums" type="RichTextLabel" parent="VBoxContainer" unique_id=1557994127]
+custom_minimum_size = Vector2(190, 60)
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 10
+theme_override_font_sizes/normal_font_size = 32
+horizontal_alignment = 1

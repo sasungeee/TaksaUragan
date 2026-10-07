@@ -1,0 +1,28 @@
+[gd_scene format=3 uid="uid://cuu3m8gpuekrv"]
+
+[ext_resource type="Script" uid="uid://bocdvhyx7jhp6" path="res://scripts/game.gd" id="1_uwrxv"]
+
+[node name="Game" type="Node2D" unique_id=767874534]
+script = ExtResource("1_uwrxv")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=1792856393]
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer" unique_id=1610834053]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Panel" type="Panel" parent="CanvasLayer/HBoxContainer" unique_id=1885974019]
+custom_minimum_size = Vector2(200, 0)
+layout_mode = 2
+size_flags_horizontal = 10
+
+[node name="PlayersContainer" type="VBoxContainer" parent="CanvasLayer/HBoxContainer/Panel" unique_id=141145606]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2

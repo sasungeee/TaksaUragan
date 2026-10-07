@@ -1,6 +1,10 @@
 extends Control
 
-#Объявление объектов на сцене
+
+# ============================================================
+# ОБЪЕКТЫ СЦЕНЫ
+# ============================================================
+
 @onready var container: VBoxContainer = $CanvasLayer/VBoxContainer
 @onready var lobby_id: Label = $CanvasLayer/VBoxContainer/LobbyID
 @onready var players_label: Label = $CanvasLayer/VBoxContainer/PanelContainer/ScrollContainer/Players
@@ -9,187 +13,264 @@ extends Control
 @onready var exit_button: Button = $CanvasLayer/ExitButton
 
 @onready var message_box: Panel = $CanvasLayer/Message
-@onready var message_text: Label =  $CanvasLayer/Message/VBoxContainer/Label
+@onready var message_text: Label = $CanvasLayer/Message/VBoxContainer/Label
 
-#Объявление переменных
+
+# ============================================================
+# ПЕРЕМЕННЫЕ
+# ============================================================
+
+# Имя текущего игрока
 var player_name: String
-var player_names := {}
+
+# Список готовых имён, доступный через Autoload
+var player_names := NamesAutoload.player_names
+
+# Исходные имена игроков
+# Например: {1: "Влад", 5: "Влад", 8: "Петя"}
+var original_names: Dictionary = {}
+
+# Порядок подключения игроков
+# Например: [1, 5, 8]
+var player_order: Array[int] = []
 
 
+# ============================================================
+# ВХОД В СЦЕНУ
+# ============================================================
 
-#Функции
-
-
-
-#Вход на сцену
 func _ready() -> void:
-	
-	#Настройка видимости объектов
-	message_box.visible = false 
+	# Настраиваем видимость элементов
+	message_box.visible = false
 	container.visible = true
 	exit_button.visible = true
-	
-	#Получаю имя игрока
+
+	# Загружаем имя игрока
 	var file = FileAccess.open("user://player_data.txt", FileAccess.READ)
 	player_name = file.get_as_text()
-	
-	#Подключаю мультплеерные вызовы в функцию
-	TubeClientAutoload.peer_connected.connect(_on_peer_connected)
-	TubeClientAutoload.peer_disconnected.connect(_on_peer_disconnected)
-	
+
+	# Подключаем сетевые сигналы
 	multiplayer.peer_connected.connect(_on_peer_connected)
 	multiplayer.peer_disconnected.connect(_on_peer_disconnected)
 	multiplayer.server_disconnected.connect(_on_host_disconnected)
-	
-	#Вывожу пятизначное ID сервера
+
+	# Показываем ID комнаты
 	lobby_id.text = TubeClientAutoload.session_id.to_upper()
-	
-	#Обновляю список игроков
-	_update_players_list()
-	
-	#Отключаю кнопку старта, если игрок - не хост
-	if TubeClientAutoload.is_server == true:
-		$CanvasLayer/VBoxContainer/StartButton.disabled = false
+
+	# Хост добавляет себя первым
+	if multiplayer.is_server():
+		var my_id = multiplayer.get_unique_id()
+
+		if !player_order.has(my_id):
+			player_order.append(my_id)
+
+		original_names[my_id] = player_name
+
+		# Создаём и отправляем список имён
+		_update_names_for_everyone()
+
 	else:
-		$CanvasLayer/VBoxContainer/StartButton.disabled = true
+		# Клиент отправляет своё имя хосту
+		_send_my_name()
+
+	# Обновляем список игроков на экране
+	_update_players_list()
+
+	# Кнопка старта доступна только хосту
+	start_button.disabled = !multiplayer.is_server()
 
 
+# ============================================================
+# РАБОТА С ИМЕНАМИ
+# ============================================================
 
-#Список Игроков
+# Отправляет имя клиента хосту
+func _send_my_name() -> void:
+	var name_to_send = player_name
+
+	# Если имя не указано, используем ID игрока
+	if name_to_send.is_empty():
+		name_to_send = "Игрок " + str(multiplayer.get_unique_id())
+
+	_register_player_name.rpc_id(1, name_to_send)
 
 
+# Получает имя клиента на стороне хоста
+@rpc("any_peer", "reliable")
+func _register_player_name(name: String) -> void:
+	if !multiplayer.is_server():
+		return
+
+	var sender_id = multiplayer.get_remote_sender_id()
+
+	# Если имя пустое, используем ID игрока
+	if name.is_empty():
+		name = "Игрок " + str(sender_id)
+
+	# Сохраняем исходное имя
+	original_names[sender_id] = name
+
+	# Добавляем игрока в порядок подключения,
+	# если он ещё не был добавлен
+	if !player_order.has(sender_id):
+		player_order.append(sender_id)
+
+	# Пересчитываем имена и отправляем их всем
+	_update_names_for_everyone()
+
+
+# Формирует уникальные имена игроков
+func _update_names_for_everyone() -> void:
+	if !multiplayer.is_server():
+		return
+
+	var result: Dictionary = {}
+	var counters: Dictionary = {}
+
+	# Идём именно в порядке подключения
+	for id in player_order:
+		if !original_names.has(id):
+			continue
+
+		var original_name: String = original_names[id]
+
+		# Считаем, сколько раз уже встретилось это имя
+		if !counters.has(original_name):
+			counters[original_name] = 1
+		else:
+			counters[original_name] += 1
+
+		var number: int = counters[original_name]
+
+		# Первому игроку суффикс не нужен
+		if number == 1:
+			result[id] = original_name
+		else:
+			result[id] = original_name + " " + str(number)
+
+	# Отправляем готовый список всем игрокам
+	_set_names.rpc(result)
+
+
+# Получает готовый список имён
+@rpc("authority", "reliable", "call_local")
+func _set_names(names: Dictionary) -> void:
+	# Обновляем глобальный список игроков
+	NamesAutoload.player_names.clear()
+	NamesAutoload.player_names.merge(names)
+
+	# Обновляем список на экране
+	_update_players_list()
+
+
+# ============================================================
+# СПИСОК ИГРОКОВ
+# ============================================================
 
 func _update_players_list() -> void:
-	#Добавляю имя в общий список
-	_ensure_my_name()
-	
-	#Начальный текст
 	var text := "Players in the lobby:\n"
-	
-	# Сортируем по ID
+
+	# Получаем ID всех игроков
 	var ids = player_names.keys()
+
+	# Сортируем только для отображения списка
 	ids.sort()
-	
-	#Добавляем все имена в список
+
 	for id in ids:
-		var x = 0
-		var original_name = player_names[id]
-		var name_str = original_name
-		
-		#Добавляем "х" в конец имени при повторе
-		for i in ids:
-			if i == id:
-				break
-			elif player_names[i] == original_name:
-				x += 1
-			
-			if x > 0:
-				name_str = original_name + " " + str(x)
-		
-		#Помечаю списком все имена и указываю статусы
+		var name_str: String = player_names[id]
+
+		# Текущий игрок
 		if id == multiplayer.get_unique_id():
 			text += "• " + name_str + " (you)\n"
+
+		# Хост
 		elif id == 1:
 			text += "• " + name_str + " (host)\n"
+
+		# Остальные игроки
 		else:
 			text += "• " + name_str + "\n"
-	
-	#Задаю текст лейбла
+
 	players_label.text = text
 
-func _ensure_my_name() -> void:
-	
-	#Получаю ID игрока
-	var my_id = multiplayer.get_unique_id()
-	if my_id == 0:
-		return
-	
-	#Задаю имя игрока
-	var my_name = player_name
-	if my_name.is_empty():
-		my_name = "Игрок " + str(my_id)
-	
-	#Прикрепляю имя определённому ID
-	player_names[my_id] = my_name
 
-func _send_my_name_to_everyone() -> void:
-	#Добавляю имя в общий список
-	_ensure_my_name()
-	
-	#Получаю имя
-	var my_name = player_names[multiplayer.get_unique_id()]
-	
-	#Регестрирую имя игрока
-	register_player_name.rpc(my_name)
-
-#удалённый вызов ф-ции регистрации
-#    любой игрок|должно дойти 100%|вызывается на моем ПК тоже
-@rpc("any_peer", "reliable", "call_local")
-func register_player_name(player_name_str: String) -> void:
-	#Получаю айдти игрока
-	var sender_id = multiplayer.get_remote_sender_id()
-	
-	# Когда call_local — sender_id будет 0
-	if sender_id == 0:
-		#Получаю айдти игрока
-		sender_id = multiplayer.get_unique_id()
-	
-	#Задаю введённое имя в общий список
-	player_names[sender_id] = player_name_str
-	
-	#Обновляю список игроков
-	_update_players_list()
-
-
-
-#Обработчики мультиплеерных событий
-
-
+# ============================================================
+# ПОДКЛЮЧЕНИЕ ИГРОКА
+# ============================================================
 
 func _on_peer_connected(peer_id: int) -> void:
-	# Сразу добавляем себя в список
-	_ensure_my_name()
-	
-	# Если это удалённый игрок — пока ставим временное имя
-	if peer_id != multiplayer.get_unique_id():
-		if not player_names.has(peer_id):
-			player_names[peer_id] = "Игрок " + str(peer_id)
-	
-	#Обновляю список игроков
-	_update_players_list()
-	
-	# Небольшая задержка, чтобы RPC точно работал
-	await get_tree().create_timer(1.0).timeout
-	_send_my_name_to_everyone()
+	if !multiplayer.is_server():
+		return
+
+	# Добавляем игрока в конец списка
+	if !player_order.has(peer_id):
+		player_order.append(peer_id)
+
+	print("Порядок игроков: ", player_order)
+
+
+# ============================================================
+# ОТКЛЮЧЕНИЕ ИГРОКА
+# ============================================================
 
 func _on_peer_disconnected(peer_id: int) -> void:
-	#удаляю имя игрока
-	player_names.erase(peer_id)
-	#Обновляю список игроков
-	_update_players_list()
+	if !multiplayer.is_server():
+		return
+
+	# Удаляем игрока из обоих списков
+	original_names.erase(peer_id)
+	player_order.erase(peer_id)
+
+	# Пересчитываем имена оставшихся игроков
+	_update_names_for_everyone()
+
+
+# ============================================================
+# ОТКЛЮЧЕНИЕ ХОСТА
+# ============================================================
 
 func _on_host_disconnected() -> void:
-	#Покинуть сессию
+	# Покидаем сессию
 	TubeClientAutoload.leave_session()
-	#Причина кика
+
+	# Показываем сообщение
 	message_text.text = "The host has left the server."
-	#Показать сообщение
+
 	container.visible = false
 	exit_button.visible = false
 	message_box.visible = true
 
 
+# ============================================================
+# НАЧАЛО ИГРЫ
+# ============================================================
 
-#Обработчики сигналов
+@rpc("authority", "reliable", "call_local")
+func _start_game() -> void:
+	# Все игроки переходят на игровую сцену
+	get_tree().change_scene_to_file("res://scenes/game.tscn")
 
 
+# ============================================================
+# КНОПКИ
+# ============================================================
 
 func _on_copy_button_pressed() -> void:
-	#копирую ID с лейбла
+	# Копируем ID комнаты в буфер обмена
 	DisplayServer.clipboard_set(lobby_id.text)
 
+
 func _on_exit_button_pressed() -> void:
-	#Покидаю сессию
+	# Покидаем сессию
 	TubeClientAutoload.leave_session()
-	#Выхожу в главное меню
+
+	# Возвращаемся в меню
 	get_tree().change_scene_to_file("res://scenes/menu.tscn")
+
+
+func _on_start_button_pressed() -> void:
+	# Начать игру может только хост
+	if !multiplayer.is_server():
+		return
+
+	_start_game.rpc()
