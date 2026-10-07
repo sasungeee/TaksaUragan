@@ -40,14 +40,15 @@ var player_order: Array[int] = []
 # ============================================================
 
 func _ready() -> void:
-	# Настраиваем видимость элементов
+	# Настройка интерфейса
 	message_box.visible = false
 	container.visible = true
 	exit_button.visible = true
 
 	# Загружаем имя игрока
-	var file = FileAccess.open("user://player_data.txt", FileAccess.READ)
-	player_name = file.get_as_text()
+	if FileAccess.file_exists("user://player_data.txt"):
+		var file = FileAccess.open("user://player_data.txt", FileAccess.READ)
+		player_name = file.get_as_text()
 
 	# Подключаем сетевые сигналы
 	multiplayer.peer_connected.connect(_on_peer_connected)
@@ -57,7 +58,7 @@ func _ready() -> void:
 	# Показываем ID комнаты
 	lobby_id.text = TubeClientAutoload.session_id.to_upper()
 
-	# Хост добавляет себя первым
+	# Хост регистрирует себя
 	if multiplayer.is_server():
 		var my_id = multiplayer.get_unique_id()
 
@@ -66,14 +67,14 @@ func _ready() -> void:
 
 		original_names[my_id] = player_name
 
-		# Создаём и отправляем список имён
 		_update_names_for_everyone()
 
 	else:
-		# Клиент отправляет своё имя хосту
+		# Даём соединению немного времени установиться
+		await get_tree().create_timer(0.5).timeout
 		_send_my_name()
 
-	# Обновляем список игроков на экране
+	# Обновляем список игроков
 	_update_players_list()
 
 	# Кнопка старта доступна только хосту
@@ -88,7 +89,6 @@ func _ready() -> void:
 func _send_my_name() -> void:
 	var name_to_send = player_name
 
-	# Если имя не указано, используем ID игрока
 	if name_to_send.is_empty():
 		name_to_send = "Игрок " + str(multiplayer.get_unique_id())
 
@@ -202,7 +202,7 @@ func _on_peer_connected(peer_id: int) -> void:
 	if !multiplayer.is_server():
 		return
 
-	# Добавляем игрока в конец списка
+	# Сохраняем порядок подключения
 	if !player_order.has(peer_id):
 		player_order.append(peer_id)
 
